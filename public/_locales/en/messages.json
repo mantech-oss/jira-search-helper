@@ -1,0 +1,17 @@
+{
+  "APP_NAME": {
+    "message": "Jira Search Helper"
+  },
+  "APP_DESCRIPTION": {
+    "message": "It is an app that complements JIRA's uncomfortable search."
+  },
+  "SETTING": {
+    "message": "Settings"
+  },
+  "JIRA_SEARCH": {
+    "message": "Search Jira"
+  },
+  "NO_SEARCH": {
+    "message": "No Search Result..."
+  }
+}
