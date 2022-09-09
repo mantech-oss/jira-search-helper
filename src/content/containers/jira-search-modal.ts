@@ -1,4 +1,4 @@
-import { css, html, TemplateResult, unsafeCSS } from 'lit'
+import { css, html, PropertyValueMap, TemplateResult, unsafeCSS } from 'lit'
 import { customElement, eventOptions, property, query } from 'lit/decorators.js'
 import { MobxLitElement } from '@adobe/lit-mobx'
 
@@ -33,6 +33,13 @@ export class JiraSearchModal extends MobxLitElement {
 
   render() {
     const { visible } = this.store
+
+    this.updateComplete.then(() => {
+      if (visible) {
+        this.input.focus()
+      }
+    })
+
     if (visible === false) return html``
     return html`
       <input
@@ -114,6 +121,8 @@ export class JiraSearchModal extends MobxLitElement {
       </tr>
     `
   }
+
+  // Event Handlers
 
   @eventOptions({})
   onChangeModalOpened(event: Event): void {
