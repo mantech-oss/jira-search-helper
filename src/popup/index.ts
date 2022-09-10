@@ -10,28 +10,28 @@ export class PopupMain extends LitElement {
   // # Properties
 
   @property({ type: Boolean })
-  enableSearchDescFeature = true
+  enableSearchFeature = true
 
   // # Event handlers
 
   // # Lifecycle methods
 
   connectedCallback(): void {
-    chrome.storage.local.get([`enableDdayFeature`], (result: any) => {
-      const { enableDdayFeature } = result
-      this.enableSearchDescFeature = enableDdayFeature
+    chrome.storage.local.get([`enableSearchFeature`], (result: any) => {
+      const { enableSearchFeature } = result
+      this.enableSearchFeature = enableSearchFeature
     })
     super.connectedCallback()
   }
 
   // # watch
-  @watch('enableDdayFeature', { waitUntilFirstUpdate: true })
-  async onWatchEnableDdayFeature(): Promise<void> {
-    chrome.storage.local.set({ enableDdayFeature: this.enableSearchDescFeature })
+  @watch('enableSearchFeature', { waitUntilFirstUpdate: true })
+  async onWatchEnableSearchFeature(): Promise<void> {
+    chrome.storage.local.set({ enableSearchFeature: this.enableSearchFeature })
   }
 
   render() {
-    const { enableSearchDescFeature: enableDdayFeature } = this
+    const { enableSearchFeature } = this
     return html`
       <main data-theme="fantasy" class="bg-transparent">
         <div class="navbar bg-base-100 shadow-xl rounded-box flex item-center justify-between">
@@ -51,9 +51,9 @@ export class PopupMain extends LitElement {
               <label class="label cursor-pointer">
                 <span class="label-text">${chrome.i18n.getMessage('APP_NAME')}</span>
                 <input
-                  ?checked=${enableDdayFeature}
+                  ?checked=${enableSearchFeature}
                   @change=${(event: Event) => {
-                    this.enableSearchDescFeature = (event.target as HTMLInputElement).checked
+                    this.enableSearchFeature = (event.target as HTMLInputElement).checked
                   }}
                   type="checkbox"
                   class="toggle toggle-accent"

@@ -1,5 +1,5 @@
 import { html, unsafeCSS } from 'lit'
-import { customElement, eventOptions } from 'lit/decorators.js'
+import { customElement, eventOptions, property } from 'lit/decorators.js'
 import { MobxLitElement } from '@adobe/lit-mobx'
 
 import tailwind from '../../styles/tailwind.css?inline'
@@ -13,7 +13,34 @@ export class JiraSearchButton extends MobxLitElement {
 
   store = jiraSearchModalStore
 
+  @property({ type: Boolean })
+  visible = true
+
+  connectedCallback(): void {
+    this.getStorage()
+    chrome.storage.onChanged.addListener(this.setEnableSearchFeature.bind(this))
+    super.connectedCallback()
+  }
+
+  disconnectedCallback(): void {
+    chrome.storage.onChanged.removeListener(this.setEnableSearchFeature.bind(this))
+    super.disconnectedCallback()
+  }
+
+  async getStorage(): Promise<void> {
+    const enableSearchFeature = (await chrome.storage.local.get(['enableSearchFeature'])) ?? false
+    this.visible = !!enableSearchFeature
+  }
+
+  async setEnableSearchFeature(changes: any, area: 'local' | 'sync') {
+    if (area !== 'local') return
+    if (!('enableSearchFeature' in changes)) return
+
+    this.visible = changes.enableSearchFeature.newValue
+  }
+
   render() {
+    if (!this.visible) return html``
     return html`
       <button
         title="Jira Search"

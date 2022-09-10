@@ -1,6 +1,6 @@
 import { action, makeObservable, observable } from 'mobx'
 
-export class JiraSearchModalStore {
+export class Store {
   public constructor() {
     makeObservable(this)
   }
@@ -49,4 +49,4 @@ export interface SearchResult {
   nextWord: string
 }
 
-export var jiraSearchModalStore = new JiraSearchModalStore()
+export const jiraSearchModalStore = new Store()

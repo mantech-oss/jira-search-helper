@@ -1,4 +1,4 @@
-import { css, html, PropertyValueMap, TemplateResult, unsafeCSS } from 'lit'
+import { css, html, TemplateResult, unsafeCSS } from 'lit'
 import { customElement, eventOptions, property, query } from 'lit/decorators.js'
 import { MobxLitElement } from '@adobe/lit-mobx'
 
