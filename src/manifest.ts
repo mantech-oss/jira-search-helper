@@ -42,13 +42,13 @@ export default defineManifest(async (env) => ({
   ],
   permissions: ['storage', 'webRequest', 'activeTab', 'scripting'],
   host_permissions: [],
-  "commands": {
-    "search-jira-issues": {
-      "suggested_key": {
-        "default": "Ctrl+Shift+I",
-        "mac": "Command+Shift+I"
+  commands: {
+    'search-jira-issues': {
+      suggested_key: {
+        default: 'Ctrl+Shift+I',
+        mac: 'Command+Shift+I',
       },
-      "description": "Search Jira Issues"
+      description: 'Search Jira Issues',
     },
-  }
+  },
 }))
