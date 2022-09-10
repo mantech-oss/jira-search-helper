@@ -1,5 +1,5 @@
 import { html, LitElement, unsafeCSS } from 'lit'
-import { customElement, property } from 'lit/decorators.js'
+import { customElement } from 'lit/decorators.js'
 
 import tailwind from '../../../styles/tailwind.css?inline'
 
@@ -9,9 +9,6 @@ import PrimerCSS from '@primer/css/index.scss'
 @customElement('jira-loading')
 export class Loading extends LitElement {
   static styles = [unsafeCSS(PrimerColorsCSS), unsafeCSS(PrimerCSS), unsafeCSS(tailwind)]
-
-  @property({ type: Number })
-  ddayNumber = 0
 
   render() {
     return html`
