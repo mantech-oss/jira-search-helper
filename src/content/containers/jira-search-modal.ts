@@ -175,6 +175,7 @@ export class JiraSearchModal extends MobxLitElement {
     event.stopImmediatePropagation()
 
     const input = this.input
+    if (!input) return
     const searchText = input.value
     this.searchText = searchText
 
@@ -191,6 +192,11 @@ export class JiraSearchModal extends MobxLitElement {
   @eventOptions({})
   onInputPreventKeyEvent(event: KeyboardEvent): void {
     event.stopImmediatePropagation()
+
+    if (event.key === 'Escape') {
+      this.store.close()
+      return
+    }
   }
 
   @eventOptions({})
