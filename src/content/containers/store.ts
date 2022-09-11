@@ -1,5 +1,6 @@
 import { action, makeObservable, observable } from 'mobx'
 import { getProjectList, ProjectValue } from '../apis/project-list'
+import { getSearchIssues } from '../apis/search-issue'
 import { parseCookie } from '../utils/parseCookie'
 import { stripHTMLTags } from '../utils/stripHTMLTags'
 
@@ -110,18 +111,14 @@ export class Store {
       const projectId = await this.selectedProjectId()
       const searchResultCount = this.searchResultCount
 
-      // FIXME: split api model
-      // FIXME: use urlsearchparams
-      const searchResponse = await fetch(
-        `https://${location.host}/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml?jqlQuery=(text+%7E+%22${searchText}%22+OR+comment+%7E+%22${searchText}%22)+AND++project+IN+%28${projectId}%29&atl_token=${atlToken}&tempMax=${searchResultCount}`,
-        {
-          method: 'GET',
-          body: null,
-          signal: this.controller.signal,
-        },
-      )
-      const str = await searchResponse.text()
-      const xml = new DOMParser().parseFromString(str, 'text/xml')
+      const searchXMLTextResponse = await getSearchIssues({
+        atlToken,
+        projectId,
+        searchResultCount,
+        searchText,
+        abortController: this.controller,
+      })
+      const xml = new DOMParser().parseFromString(searchXMLTextResponse, 'text/xml')
       const searchTextArray = searchText.split(/\s+/)
       searchText = searchTextArray[searchTextArray.length - 1]
       const searchResult: SearchResult[] = []

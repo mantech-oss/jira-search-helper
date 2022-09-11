@@ -207,6 +207,7 @@ export class JiraSearchModal extends MobxLitElement {
     const value = parseInt(input.value)
 
     await this.store.setSearchResultCount(value)
+    if (this.searchText === '') return
     this.store.fetchSearchApi(this.searchText)
   }
 }
