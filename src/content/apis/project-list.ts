@@ -92,9 +92,15 @@ export async function getProjectList({
 }: {
   abortController?: AbortController
 } = {}): Promise<GetProjectListResponse> {
-  // FIXME: use urlsearchparams
+  const searchParams = new URLSearchParams()
+  searchParams.set('expand', `lead,url,favourite,permissions`)
+  searchParams.set('maxResults', `100`)
+  searchParams.set('orderBy', `+NAME`)
+  searchParams.set('query', ``)
+  searchParams.set('startAt', `0`)
+  searchParams.set('typeKey', `software`)
   const response = await fetch(
-    `https://${location.host}/rest/api/2/project/search?expand=lead%2Curl%2Cfavourite%2Cpermissions&maxResults=100&orderBy=%2BNAME&query=&startAt=0&typeKey=software`,
+    `https://${location.host}/rest/api/2/project/search?${searchParams.toString()}`,
     {
       method: 'GET',
       body: null,

@@ -14,9 +14,21 @@ export async function getSearchIssues({
   atlToken: string
   searchResultCount: number
 }): Promise<XMLResponse> {
-  // FIXME: use urlsearchparams
+  const searchParams = new URLSearchParams()
+  const issueKey = searchText.match(/[A-Z|a-z|0-9]{2,}-\d+/)?.[0]
+
+  searchParams.set(
+    'jqlQuery',
+    `(text ~ "${searchText}" OR comment ~ "${searchText}"${
+      issueKey ? ` OR issuekey = "${issueKey}"` : ``
+    }) AND  project IN (${projectId})`,
+  )
+  searchParams.set('atl_token', atlToken)
+  searchParams.set('tempMax', `${searchResultCount}`)
   const response = await fetch(
-    `https://${location.host}/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml?jqlQuery=(text+%7E+%22${searchText}%22+OR+comment+%7E+%22${searchText}%22)+AND++project+IN+%28${projectId}%29&atl_token=${atlToken}&tempMax=${searchResultCount}`,
+    `https://${
+      location.host
+    }/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml?${searchParams.toString()}`,
     {
       method: 'GET',
       body: null,
