@@ -21,12 +21,19 @@ export class JiraSearchWord extends LitElement {
     return this.previousWord
   }
 
+  get nextWordString(): string {
+    if (this.word.length === 0) return ''
+    return this.nextWord
+  }
+
   render() {
-    const { previousWordString, word, nextWord } = this
+    const { previousWordString, word, nextWordString } = this
     return html`
-      ${previousWordString} <strong class="text-bold text-lg underline decoration-dotted">${word}</strong> ${nextWord}
+      ${previousWordString}
+      <strong class="text-bold text-lg underline decoration-dotted">${word}</strong>
+      ${nextWordString}
     `
-  }  
+  }
 }
 
 declare global {
