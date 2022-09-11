@@ -1,5 +1,5 @@
 import { action, makeObservable, observable } from 'mobx'
-import { getProjectList, ProjectValue } from '../components/apis/project-list'
+import { getProjectList, ProjectValue } from '../apis/project-list'
 import { parseCookie } from '../utils/parseCookie'
 import { stripHTMLTags } from '../utils/stripHTMLTags'
 

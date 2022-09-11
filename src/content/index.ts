@@ -1,4 +1,3 @@
-import './components/loading/loading'
 import './containers/jira-search-button'
 import './containers/jira-search-modal'
 
