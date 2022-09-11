@@ -108,7 +108,7 @@ export class Store {
       this.loading = true
 
       await this.getProjectList()
-      const projectId = await this.selectedProjectId()
+      const projectId = this.selectedProjectId()
       const searchResultCount = this.searchResultCount
 
       const searchXMLTextResponse = await getSearchIssues({
