@@ -19,5 +19,8 @@
   },
   "TOTAL": {
     "message": "Total:"
+  },
+  "HELP_TEXT_COMMANDS": {
+    "message": "Open Modal: Command(Ctrl)+Shift+I"
   }
 }

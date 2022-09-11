@@ -48,17 +48,19 @@ export class PopupMain extends LitElement {
               <span>${chrome.i18n.getMessage('VIEW_REAL_TIME_DATA')}</span>
             </li>
             <li class="w-full flex">
-              <label class="label cursor-pointer">
-                <span class="label-text">${chrome.i18n.getMessage('APP_NAME')}</span>
-                <input
-                  ?checked=${enableSearchFeature}
-                  @change=${(event: Event) => {
-                    this.enableSearchFeature = (event.target as HTMLInputElement).checked
-                  }}
-                  type="checkbox"
-                  class="toggle toggle-accent"
-                />
-              </label>
+              <div class="tooltip" data-tip="${chrome.i18n.getMessage('HELP_TEXT_COMMANDS')}">
+                <label class="label cursor-pointer">
+                  <span class="label-text">${chrome.i18n.getMessage('APP_NAME')}</span>
+                  <input
+                    ?checked=${enableSearchFeature}
+                    @change=${(event: Event) => {
+                      this.enableSearchFeature = (event.target as HTMLInputElement).checked
+                    }}
+                    type="checkbox"
+                    class="toggle toggle-accent"
+                  />
+                </label>
+              </div>
             </li>
           </ul>
         </div>

@@ -19,5 +19,8 @@
   },
   "TOTAL": {
     "message": "Total:"
+  },
+  "HELP_TEXT_COMMANDS": {
+    "message": "검색창 열기 단축키: Command(Ctrl)+Shift+I"
   }
 }
