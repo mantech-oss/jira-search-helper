@@ -95,6 +95,8 @@ export class Store {
   }
 
   async fetchSearchApi(searchText: string): Promise<void> {
+    if (searchText === '') return
+
     try {
       document.body.appendChild(document.createElement('jira-loading'))
       const cookies = parseCookie(document.cookie)

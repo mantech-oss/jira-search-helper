@@ -205,6 +205,7 @@ export class JiraSearchModal extends MobxLitElement {
     const value = JSON.parse(input.value)
 
     this.store.selectProject(value)
+    this.store.fetchSearchApi(this.searchText)
   }
 
   @eventOptions({})
@@ -213,7 +214,6 @@ export class JiraSearchModal extends MobxLitElement {
     const value = parseInt(input.value)
 
     await this.store.setSearchResultCount(value)
-    if (this.searchText === '') return
     this.store.fetchSearchApi(this.searchText)
   }
 }
