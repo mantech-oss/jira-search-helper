@@ -126,6 +126,10 @@ export class Store {
       const searchResult: SearchResult[] = []
 
       xml.querySelectorAll('item').forEach((item) => {
+        const title = stripHTMLTags(item.querySelector('title')?.textContent ?? '').replace(
+          /\s\n/g,
+          '',
+        )
         const description = stripHTMLTags(
           item.querySelector('description')?.textContent ?? '',
         ).replace(/\s\n/g, '')
@@ -138,25 +142,40 @@ export class Store {
         let previousWord = ''
         let nextWord = ''
         let commentsIndex = -1
+        let descriptionIndex = -1
         let WORD_GRP = 30
-        const descriptionIndex = description.toLowerCase().indexOf(searchText.toLowerCase())
+        const titleIndex = title.toLowerCase().indexOf(searchText.toLowerCase())
 
-        if (descriptionIndex === -1) {
-          commentsIndex = comments.toLowerCase().indexOf(searchText.toLowerCase())
-
-          if (commentsIndex !== -1) {
-            previousWord = comments.substring(commentsIndex - WORD_GRP, commentsIndex)
-            nextWord = comments.substring(
-              commentsIndex + searchTextLength,
-              commentsIndex + searchTextLength + WORD_GRP,
-            )
-          }
-        } else {
-          previousWord = description.substring(descriptionIndex - WORD_GRP, descriptionIndex)
-          nextWord = description.substring(
-            descriptionIndex + searchTextLength,
-            descriptionIndex + searchTextLength + WORD_GRP,
+        // search in title
+        if (titleIndex !== -1) {
+          previousWord = title.substring(titleIndex - WORD_GRP, titleIndex)
+          nextWord = title.substring(
+            titleIndex + searchTextLength,
+            titleIndex + searchTextLength + WORD_GRP,
           )
+          console.log({ previousWord, nextWord })
+        } else {
+          descriptionIndex = description.toLowerCase().indexOf(searchText.toLowerCase())
+
+          // search in description
+          if (descriptionIndex !== -1) {
+            previousWord = description.substring(descriptionIndex - WORD_GRP, descriptionIndex)
+            nextWord = description.substring(
+              descriptionIndex + searchTextLength,
+              descriptionIndex + searchTextLength + WORD_GRP,
+            )
+          } else {
+            commentsIndex = comments.toLowerCase().indexOf(searchText.toLowerCase())
+
+            // search in comments
+            if (commentsIndex !== -1) {
+              previousWord = comments.substring(commentsIndex - WORD_GRP, commentsIndex)
+              nextWord = comments.substring(
+                commentsIndex + searchTextLength,
+                commentsIndex + searchTextLength + WORD_GRP,
+              )
+            }
+          }
         }
 
         searchResult.push({
@@ -165,7 +184,8 @@ export class Store {
           key: item.querySelector('key')?.textContent ?? '',
           issueIconUrl: item.querySelector('type')?.getAttribute('iconUrl') ?? '',
           previousWord,
-          searchText: descriptionIndex !== -1 || commentsIndex !== -1 ? searchText : '',
+          searchText:
+            titleIndex !== -1 || descriptionIndex !== -1 || commentsIndex !== -1 ? searchText : '',
           nextWord,
         })
       })
