@@ -1,7 +1,12 @@
 init()
 
 function init(): void {
+  initStorage()
   addCommandListener()
+}
+
+function initStorage(): void {
+  chrome.storage.local.set({ enableSearchFeature: true })
 }
 
 function addCommandListener(): void {
