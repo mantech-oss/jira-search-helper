@@ -24,13 +24,13 @@ export default defineManifest(async (env) => ({
       : [
           {
             run_at: 'document_start',
-            matches: ['https://*.jira.com/*'],
+            matches: ['https://*.jira.com/*', 'https://*.atlassian.net/*'],
             js: ['public/js/webcomponent.js'],
           },
         ]),
     {
       run_at: 'document_end',
-      matches: ['https://*.jira.com/*'],
+      matches: ['https://*.jira.com/*', 'https://*.atlassian.net/*'],
       js: ['src/content/index.ts'],
     },
   ],
