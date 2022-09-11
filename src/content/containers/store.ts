@@ -8,6 +8,7 @@ export class Store {
     makeObservable(this)
 
     this.getSelectedProject()
+    this.getSearchResultCount()
   }
 
   @observable
@@ -107,11 +108,12 @@ export class Store {
 
       await this.getProjectList()
       const projectId = await this.selectedProjectId()
+      const searchResultCount = this.searchResultCount
 
       // FIXME: split api model
       // FIXME: use urlsearchparams
       const searchResponse = await fetch(
-        `https://${location.host}/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml?jqlQuery=(text+%7E+%22${searchText}%22+OR+comment+%7E+%22${searchText}%22)+AND++project+IN+%28${projectId}%29&atl_token=${atlToken}&tempMax=20`,
+        `https://${location.host}/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml?jqlQuery=(text+%7E+%22${searchText}%22+OR+comment+%7E+%22${searchText}%22)+AND++project+IN+%28${projectId}%29&atl_token=${atlToken}&tempMax=${searchResultCount}`,
         {
           method: 'GET',
           body: null,
@@ -177,6 +179,20 @@ export class Store {
   }
 
   // ===
+
+  @observable
+  searchResultCount = 20
+
+  @action
+  async setSearchResultCount(count: number): Promise<void> {
+    this.searchResultCount = count
+    await chrome.storage.local.set({ searchResultCount: count })
+  }
+
+  async getSearchResultCount(): Promise<void> {
+    const { searchResultCount } = await chrome.storage.local.get(['searchResultCount'])
+    this.setSearchResultCount(searchResultCount)
+  }
 }
 
 export interface SearchResult {

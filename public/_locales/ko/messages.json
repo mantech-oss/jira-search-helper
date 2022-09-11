@@ -16,5 +16,8 @@
   },
   "PROJECT_LABEL": {
     "message": "Project:"
+  },
+  "TOTAL": {
+    "message": "Total:"
   }
 }

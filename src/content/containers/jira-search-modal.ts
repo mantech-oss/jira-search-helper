@@ -24,8 +24,10 @@ export class JiraSearchModal extends MobxLitElement {
 
   @query('.input-search') input!: HTMLInputElement
 
+  private searchText = ''
+
   render() {
-    const { visible, projectes, selectedProject } = this.store
+    const { visible, projectes, selectedProject, searchResultCount } = this.store
 
     this.updateComplete.then(() => {
       if (visible) {
@@ -64,6 +66,20 @@ export class JiraSearchModal extends MobxLitElement {
                   </option>
                 `
               })}
+            </select>
+
+            <label class="label ml-auto">
+              <span class="label-text">${chrome.i18n.getMessage('TOTAL')}</span>
+            </label>
+            <select
+              class="select select-ghost select-sm w-32 focus:outline-none"
+              @input=${this.onInputSearchResultCount}
+            >
+              <option value="10" ?selected=${searchResultCount === 10}>10 (fast)</option>
+              <option value="20" ?selected=${searchResultCount === 20}>20 (default)</option>
+              <option value="50" ?selected=${searchResultCount === 50}>50</option>
+              <option value="100" ?selected=${searchResultCount === 100}>100</option>
+              <option value="500" ?selected=${searchResultCount === 500}>500 (slow)</option>
             </select>
           </div>
           <div part="search-box" class="py-4">
@@ -160,6 +176,7 @@ export class JiraSearchModal extends MobxLitElement {
 
     const input = this.input
     const searchText = input.value
+    this.searchText = searchText
 
     // If the letter is less than 0, no search
     if (searchText?.length <= 0) {
@@ -182,6 +199,15 @@ export class JiraSearchModal extends MobxLitElement {
     const value = JSON.parse(input.value)
 
     this.store.selectProject(value)
+  }
+
+  @eventOptions({})
+  async onInputSearchResultCount(event: Event): Promise<void> {
+    const input = event.target as HTMLSelectElement
+    const value = parseInt(input.value)
+
+    await this.store.setSearchResultCount(value)
+    this.store.fetchSearchApi(this.searchText)
   }
 }
 
