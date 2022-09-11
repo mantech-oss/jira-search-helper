@@ -40,7 +40,7 @@ export default defineManifest(async (env) => ({
       matches: [],
     },
   ],
-  permissions: ['storage', 'webRequest', 'activeTab', 'scripting'],
+  permissions: ['storage', 'activeTab', 'scripting'],
   host_permissions: [],
   commands: {
     'search-jira-issues': {
