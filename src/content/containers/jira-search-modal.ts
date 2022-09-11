@@ -1,5 +1,5 @@
 import { css, html, TemplateResult, unsafeCSS } from 'lit'
-import { customElement, eventOptions, property, query } from 'lit/decorators.js'
+import { customElement, eventOptions, query } from 'lit/decorators.js'
 import { MobxLitElement } from '@adobe/lit-mobx'
 
 import tailwind from '../../styles/tailwind.css?inline'
@@ -8,8 +8,6 @@ import { jiraSearchModalStore, SearchResult } from './store'
 
 import '../components/search-word/search-word.ts'
 import { debounce } from '../utils/debounce'
-import { parseCookie } from '../utils/parseCookie'
-import { stripHTMLTags } from '../utils/stripHTMLTags'
 
 @customElement('jira-search-modal')
 export class JiraSearchModal extends MobxLitElement {
@@ -24,15 +22,10 @@ export class JiraSearchModal extends MobxLitElement {
 
   store = jiraSearchModalStore
 
-  private controller = new AbortController()
-
-  @property({ type: Boolean })
-  loading = false
-
   @query('.input-search') input!: HTMLInputElement
 
   render() {
-    const { visible } = this.store
+    const { visible, projectes, selectedProject } = this.store
 
     this.updateComplete.then(() => {
       if (visible) {
@@ -52,7 +45,27 @@ export class JiraSearchModal extends MobxLitElement {
       <label data-theme="fantasy" for="searchModal" class="modal cursor-pointer">
         <label class="modal-box w-11/12 max-w-5xl">
           <label for="searchModal" class="btn btn-sm btn-circle absolute right-2 top-2">✕</label>
-          <h3 class="text-lg font-bold">${chrome.i18n.getMessage('APP_NAME')}</h3>
+          <div class="modal-title flex flex-row items-center">
+            <h3 class="text-lg font-bold mr-4">${chrome.i18n.getMessage('APP_NAME')}</h3>
+            <label class="label">
+              <span class="label-text">${chrome.i18n.getMessage('PROJECT_LABEL')}</span>
+            </label>
+            <select
+              class="select select-ghost select-sm w-48 mr-auto max-w-xs focus:outline-none"
+              @input=${this.onInputProject}
+            >
+              ${projectes.map((project) => {
+                return html`
+                  <option
+                    value=${JSON.stringify(project)}
+                    ?selected=${project.key === selectedProject?.key}
+                  >
+                    ${project.key}
+                  </option>
+                `
+              })}
+            </select>
+          </div>
           <div part="search-box" class="py-4">
             <input
               type="text"
@@ -74,7 +87,7 @@ export class JiraSearchModal extends MobxLitElement {
   }
 
   renderSearchResultTemplate(): TemplateResult {
-    if (this.loading) return html`<progress class="progress w-full"></progress>`
+    if (this.store.loading) return html`<progress class="progress w-full"></progress>`
     return html`
       <table class="table table-compact w-full table-fixed">
         <tbody>
@@ -122,6 +135,13 @@ export class JiraSearchModal extends MobxLitElement {
     `
   }
 
+  // Lifecycle
+
+  connectedCallback(): void {
+    this.store.getProjectList()
+    super.connectedCallback()
+  }
+
   // Event Handlers
 
   @eventOptions({})
@@ -141,98 +161,27 @@ export class JiraSearchModal extends MobxLitElement {
     const input = this.input
     const searchText = input.value
 
-    // 0글자 이하면 검색하지 않음
+    // If the letter is less than 0, no search
     if (searchText?.length <= 0) {
       this.store.clearSearchResult()
       return
     }
 
-    await this.fetchSearchApi(searchText)
-  }
-
-  async fetchSearchApi(searchText: string): Promise<void> {
-    try {
-      document.body.appendChild(document.createElement('jira-loading'))
-      const cookies = parseCookie(document.cookie)
-      const atlToken = cookies['atlassian.xsrf.token']
-
-      if (!atlToken) return
-
-      this.controller.abort()
-      this.controller = new AbortController()
-
-      this.loading = true
-
-      const response = await fetch(
-        `https://${location.host}/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml?jqlQuery=(text+%7E+%22${searchText}%22+OR+comment+%7E+%22${searchText}%22)+AND++project+IN+%2812210%29&atl_token=${atlToken}&tempMax=20`,
-        {
-          method: 'GET',
-          body: null,
-          signal: this.controller.signal,
-        },
-      )
-      const str = await response.text()
-      const xml = new DOMParser().parseFromString(str, 'text/xml')
-      const searchTextArray = searchText.split(/\s+/)
-      searchText = searchTextArray[searchTextArray.length - 1]
-      const searchResult: SearchResult[] = []
-
-      xml.querySelectorAll('item').forEach((item) => {
-        const description = stripHTMLTags(
-          item.querySelector('description')?.textContent ?? '',
-        ).replace(/\s\n/g, '')
-        const comments = stripHTMLTags(item.querySelector('comments')?.textContent ?? '').replace(
-          /\s\n/g,
-          '',
-        )
-        const searchTextLength = searchText.length
-
-        let previousWord = ''
-        let nextWord = ''
-        let commentsIndex = -1
-        let WORD_GRP = 30
-        const descriptionIndex = description.toLowerCase().indexOf(searchText.toLowerCase())
-
-        if (descriptionIndex === -1) {
-          commentsIndex = comments.toLowerCase().indexOf(searchText.toLowerCase())
-
-          if (commentsIndex !== -1) {
-            previousWord = comments.substring(commentsIndex - WORD_GRP, commentsIndex)
-            nextWord = comments.substring(
-              commentsIndex + searchTextLength,
-              commentsIndex + searchTextLength + WORD_GRP,
-            )
-          }
-        } else {
-          previousWord = description.substring(descriptionIndex - WORD_GRP, descriptionIndex)
-          nextWord = description.substring(
-            descriptionIndex + searchTextLength,
-            descriptionIndex + searchTextLength + WORD_GRP,
-          )
-        }
-
-        searchResult.push({
-          title: item.querySelector('summary')?.textContent ?? '',
-          href: item.querySelector('link')?.textContent ?? '',
-          key: item.querySelector('key')?.textContent ?? '',
-          issueIconUrl: item.querySelector('type')?.getAttribute('iconUrl') ?? '',
-          previousWord,
-          searchText: descriptionIndex !== -1 || commentsIndex !== -1 ? searchText : '',
-          nextWord,
-        })
-      })
-      this.store.setSearchResult(searchResult)
-      this.loading = false
-    } catch (error) {
-      this.loading = false
-      console.error(error)
-    }
+    await this.store.fetchSearchApi(searchText)
   }
 
   // Prevent Jira Hotkey
   @eventOptions({})
   onInputPreventKeyEvent(event: KeyboardEvent): void {
     event.stopImmediatePropagation()
+  }
+
+  @eventOptions({})
+  onInputProject(event: Event): void {
+    const input = event.target as HTMLSelectElement
+    const value = JSON.parse(input.value)
+
+    this.store.selectProject(value)
   }
 }
 

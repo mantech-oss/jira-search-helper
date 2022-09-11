@@ -13,5 +13,8 @@
   },
   "NO_SEARCH": {
     "message": "No Search Result..."
+  },
+  "PROJECT_LABEL": {
+    "message": "Project:"
   }
 }

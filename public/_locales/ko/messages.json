@@ -7,11 +7,14 @@
   },
   "SETTING": {
     "message": "설정"
-  },  
+  },
   "JIRA_SEARCH": {
     "message": "Jira 검색"
   },
   "NO_SEARCH": {
     "message": "검색 단어를 찾지 못했습니다."
+  },
+  "PROJECT_LABEL": {
+    "message": "Project:"
   }
 }
