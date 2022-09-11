@@ -19,7 +19,7 @@ export class PopupMain extends LitElement {
   connectedCallback(): void {
     chrome.storage.local.get([`enableSearchFeature`], (result: any) => {
       const { enableSearchFeature } = result
-      this.enableSearchFeature = enableSearchFeature
+      this.enableSearchFeature = enableSearchFeature ?? true
     })
     super.connectedCallback()
   }
