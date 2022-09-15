@@ -153,7 +153,6 @@ export class Store {
             titleIndex + searchTextLength,
             titleIndex + searchTextLength + WORD_GRP,
           )
-          console.log({ previousWord, nextWord })
         } else {
           descriptionIndex = description.toLowerCase().indexOf(searchText.toLowerCase())
 
