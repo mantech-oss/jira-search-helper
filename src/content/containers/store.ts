@@ -237,7 +237,7 @@ export class Store {
 
   async getSearchResultCount(): Promise<void> {
     const { searchResultCount } = await chrome.storage.local.get(['searchResultCount'])
-    this.setSearchResultCount(searchResultCount)
+    this.setSearchResultCount(searchResultCount || 20)
   }
 }
 
