@@ -3,7 +3,7 @@ import { defineManifest } from '@crxjs/vite-plugin'
 export default defineManifest(async (env) => ({
   name: '__MSG_APP_NAME__',
   description: '__MSG_APP_DESCRIPTION__',
-  version: '1.0.0',
+  version: '1.1.0',
   default_locale: 'en',
   manifest_version: 3,
   icons: {
