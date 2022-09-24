@@ -1,4 +1,4 @@
-import { action, makeObservable, observable } from 'mobx'
+import { action, computed, makeObservable, observable } from 'mobx'
 import { getProjectList, ProjectValue } from '../apis/project-list'
 import { getOnpremiseProjectList } from '../apis/project-list-onpremise'
 import { getSearchIssues } from '../apis/search-issue'
@@ -54,14 +54,33 @@ export class Store {
   loading = false
 
   @observable
-  projectes: Project[] = []
+  projects: Project[] = []
+
+  @computed
+  get projectDisplayName(): string[] {
+    return this.projects.map((project) => {
+      return `${project.name} (${project.key})`
+    })
+  }
 
   @observable
   selectedProject: Project | null = null
 
-  selectedProjectId(): string {
+  @computed
+  get selectedProjectDisplayName(): string {
+    const selectedProject = this.projects.find((project) => {
+      return project.id === this.selectedProjectId
+    })
+
+    if (!selectedProject) return 'No Project'
+
+    return `${selectedProject.name} (${selectedProject.key})`
+  }
+
+  @computed
+  get selectedProjectId(): string {
     const { selectedProject } = this
-    const projectId = selectedProject?.id ?? this.projectes?.[0].id
+    const projectId = selectedProject?.id ?? this.projects?.[0]?.id
     return projectId
   }
 
@@ -73,18 +92,19 @@ export class Store {
 
   @action
   setProjects(projects: Project[]): void {
-    this.projectes = projects
+    this.projects = projects
     chrome.storage.local.set({ projects: projects })
   }
 
   async getProjectList(): Promise<void> {
     const { isOnPremise } = await chrome.storage.local.get(['isOnPremise'])
-    let projects: Project[] = [];
+    let projects: Project[] = []
     if (isOnPremise) {
       const projectJson = await getOnpremiseProjectList({ abortController: this.controller })
-      projects = projectJson.map(each => {
+      projects = projectJson.map((each) => {
         return {
           id: each.id,
+          name: each.name,
           key: each.key,
         }
       })
@@ -93,27 +113,31 @@ export class Store {
       let startAt = 0
       while (isLast === false) {
         try {
-          const projectJson = await getProjectList({ abortController: this.controller, startAt: startAt })
+          const projectJson = await getProjectList({
+            abortController: this.controller,
+            startAt: startAt,
+          })
           isLast = projectJson.isLast
           if (projectJson.isLast === false) {
             startAt += 50
           }
           projects = [
-            ...projects, 
+            ...projects,
             ...projectJson.values.map((each: ProjectValue) => {
               return {
                 id: each.id,
+                name: each.name,
                 key: each.key,
               }
-            })
+            }),
           ]
         } catch (error) {
-           console.error(error)
-           isLast = true
-        }        
-      }      
+          console.error(error)
+          isLast = true
+        }
+      }
     }
-    
+
     this.setProjects(projects)
   }
 
@@ -138,7 +162,7 @@ export class Store {
       this.loading = true
 
       await this.getProjectList()
-      const projectId = this.selectedProjectId()
+      const projectId = this.selectedProjectId
       const searchResultCount = this.searchResultCount
 
       const searchXMLTextResponse = await getSearchIssues({
@@ -253,6 +277,7 @@ export interface SearchResult {
 
 export interface Project {
   id: string
+  name: string
   key: string
 }
 

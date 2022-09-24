@@ -7,6 +7,7 @@ import tailwind from '../../styles/tailwind.css?inline'
 import { jiraSearchModalStore, SearchResult } from './store'
 
 import '../components/search-word/search-word.ts'
+import '../components/selects/select'
 import { debounce } from '../utils/debounce'
 
 @customElement('jira-search-modal')
@@ -27,13 +28,10 @@ export class JiraSearchModal extends MobxLitElement {
   private searchText = ''
 
   render() {
-    const { visible, projectes, selectedProject, searchResultCount } = this.store
+    const { visible, projectDisplayName, searchResultCount, selectedProjectDisplayName } =
+      this.store
 
-    this.updateComplete.then(() => {
-      if (visible) {
-        this.input.focus()
-      }
-    })
+    this.focusSearchInput(visible)
 
     if (visible === false) return html``
     return html`
@@ -45,28 +43,22 @@ export class JiraSearchModal extends MobxLitElement {
         @change=${this.onChangeModalOpened}
       />
       <label data-theme="fantasy" for="searchModal" class="modal cursor-pointer">
-        <label class="modal-box w-11/12 max-w-5xl">
+        <label class="modal-box w-11/12 max-w-5xl overflow-visible">
           <label for="searchModal" class="btn btn-sm btn-circle absolute right-2 top-2">✕</label>
           <div class="modal-title flex flex-row items-center">
             <h3 class="text-lg font-bold mr-4">${chrome.i18n.getMessage('APP_NAME')}</h3>
-            <label class="label">
-              <span class="label-text">${chrome.i18n.getMessage('PROJECT_LABEL')}</span>
-            </label>
-            <select
-              class="select select-ghost select-sm w-48 mr-auto max-w-xs focus:outline-none"
-              @input=${this.onInputProject}
-            >
-              ${projectes.map((project) => {
-                return html`
-                  <option
-                    value=${JSON.stringify(project)}
-                    ?selected=${project.key === selectedProject?.key}
-                  >
-                    ${project.key}
-                  </option>
-                `
-              })}
-            </select>
+
+            <jira-select
+              class="w-48 mr-auto max-w-xs"
+              .title=${chrome.i18n.getMessage('PROJECT_LABEL')}
+              .useSearch=${true}
+              .items=${projectDisplayName}
+              .selectedItemText=${selectedProjectDisplayName}
+              @select-item=${this.onInputProject}
+              @keypress=${this.onInputPreventKeyEvent}
+              @keydown=${this.onInputPreventKeyEvent}
+              @keyup=${this.onInputPreventKeyEvent}
+            ></jira-select>
 
             <label class="label ml-auto">
               <span class="label-text">${chrome.i18n.getMessage('TOTAL')}</span>
@@ -94,12 +86,20 @@ export class JiraSearchModal extends MobxLitElement {
               @keyup=${this.onInputPreventKeyEvent}
             />
           </div>
-          <div part="search-result" class="overflow-x-auto">
+          <div part="search-result" class="overflow-x-auto overflow-y-scroll max-h-[70vh]">
             ${this.renderSearchResultTemplate()}
           </div>
         </label>
       </label>
     `
+  }
+
+  private focusSearchInput(visible: boolean) {
+    this.updateComplete.then(() => {
+      if (visible) {
+        this.input.focus()
+      }
+    })
   }
 
   renderSearchResultTemplate(): TemplateResult {
@@ -200,11 +200,10 @@ export class JiraSearchModal extends MobxLitElement {
   }
 
   @eventOptions({})
-  onInputProject(event: Event): void {
-    const input = event.target as HTMLSelectElement
-    const value = JSON.parse(input.value)
+  onInputProject(event: CustomEvent): void {
+    const detail = event.detail
 
-    this.store.selectProject(value)
+    this.store.selectProject(this.store.projects[detail.index])
     this.store.fetchSearchApi(this.searchText)
   }
 
