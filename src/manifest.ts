@@ -45,8 +45,9 @@ export default defineManifest(async (env) => ({
   commands: {
     'search-jira-issues': {
       suggested_key: {
-        default: 'Ctrl+Shift+I',
-        mac: 'Command+Shift+I',
+        default: 'Ctrl+Shift+J',
+        windows: 'Ctrl+Shift+J',
+        mac: 'Alt+Shift+J',
       },
       description: 'Search Jira Issues',
     },

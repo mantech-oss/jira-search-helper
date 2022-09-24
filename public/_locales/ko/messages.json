@@ -21,7 +21,7 @@
     "message": "Total"
   },
   "HELP_TEXT_COMMANDS": {
-    "message": "검색창 열기 기본 단축키: Command(Ctrl)+Shift+I"
+    "message": "검색창 열기 기본 단축키: Option(window:Ctrl)+Shift+J"
   },
   "JIRA_ON_PREMISE": {
     "message": "JIRA 설치형"

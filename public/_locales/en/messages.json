@@ -21,7 +21,7 @@
     "message": "Total"
   },
   "HELP_TEXT_COMMANDS": {
-    "message": "Open Modal: Command(Ctrl)+Shift+I"
+    "message": "Open Modal: Option(window:Ctrl)+Shift+J"
   },
   "JIRA_ON_PREMISE": {
     "message": "On-Premise"
