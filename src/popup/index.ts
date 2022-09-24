@@ -1,12 +1,11 @@
-import { html, css, LitElement, unsafeCSS } from 'lit'
+import { html, css } from 'lit'
 import { customElement, eventOptions, property, state } from 'lit/decorators.js'
+import { BaseComponent } from '../common/baseComponent'
 import { IconCog, IconCopy } from '../content/components/icons/icons'
 import { watch } from '../content/utils/watch'
 
-import tailwind from '../styles/tailwind.css?inline'
-
 @customElement('popup-main')
-export class PopupMain extends LitElement {
+export class PopupMain extends BaseComponent {
   // # Properties
 
   @property({ type: Boolean })
@@ -123,7 +122,7 @@ export class PopupMain extends LitElement {
   }
 
   static styles = [
-    unsafeCSS(tailwind),
+    ...super.styles,
     css`
       main {
         min-width: 500px;

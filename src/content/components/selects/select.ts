@@ -1,15 +1,23 @@
-import { html, TemplateResult, CSSResult, LitElement, unsafeCSS } from 'lit'
+import { html, TemplateResult, CSSResult, unsafeCSS } from 'lit'
+import { BaseComponent } from '../../../common/baseComponent'
 import { customElement, eventOptions, property, query } from 'lit/decorators.js'
 import { styleMap } from 'lit/directives/style-map.js'
 
-import PrimerColorsCSS from '../styles/primer-colors.scss'
-import PrimerCSS from '@primer/css/index.scss'
+import PrimerColors2CSS from '@primer/css/color-modes/themes/light.scss'
+import PrimerCoreCSS from '@primer/css/core/index.scss'
+import PrimerProductCSS from '@primer/css/product/index.scss'
+// import PrimerMarketingCSS from '@primer/css/marketing/index.scss'
 import Style from './select.scss'
 
 @customElement('jira-select')
-export default class JiraSelect extends LitElement {
+export default class JiraSelect extends BaseComponent {
   static get styles(): CSSResult[] {
-    return [unsafeCSS(PrimerColorsCSS), unsafeCSS(PrimerCSS), unsafeCSS(Style)]
+    return [
+      unsafeCSS(PrimerColors2CSS),
+      unsafeCSS(PrimerCoreCSS),
+      unsafeCSS(PrimerProductCSS),
+      unsafeCSS(Style),
+    ]
   }
 
   @property({ type: Boolean })

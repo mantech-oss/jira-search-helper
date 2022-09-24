@@ -1,16 +1,13 @@
-import { html, unsafeCSS } from 'lit'
+import { html } from 'lit'
 import { customElement, eventOptions, property } from 'lit/decorators.js'
-import { MobxLitElement } from '@adobe/lit-mobx'
+import { BaseMobxComponent } from '../../common/baseComponent'
 
-import tailwind from '../../styles/tailwind.css?inline'
 
 import { IconSearch } from '../components/icons/icons'
 import { jiraSearchModalStore } from './store'
 
 @customElement('jira-search-button')
-export class JiraSearchButton extends MobxLitElement {
-  static styles = [unsafeCSS(tailwind)]
-
+export class JiraSearchButton extends BaseMobxComponent {
   store = jiraSearchModalStore
 
   @property({ type: Boolean })

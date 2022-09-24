@@ -1,12 +1,10 @@
-import { html, LitElement, unsafeCSS } from 'lit'
+import { html } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
+import { BaseComponent } from '../../../common/baseComponent'
 
-import tailwind from '../../../styles/tailwind.css?inline'
 
 @customElement('jira-search-word')
-export class JiraSearchWord extends LitElement {
-  static styles = [unsafeCSS(tailwind)]
-
+export class JiraSearchWord extends BaseComponent {
   @property({ type: String })
   previousWord = ''
 

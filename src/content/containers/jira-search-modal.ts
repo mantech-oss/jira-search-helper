@@ -1,8 +1,6 @@
-import { css, html, TemplateResult, unsafeCSS } from 'lit'
+import { css, html, TemplateResult } from 'lit'
 import { customElement, eventOptions, query } from 'lit/decorators.js'
-import { MobxLitElement } from '@adobe/lit-mobx'
-
-import tailwind from '../../styles/tailwind.css?inline'
+import { BaseMobxComponent } from '../../common/baseComponent'
 
 import { jiraSearchModalStore, SearchResult } from './store'
 
@@ -11,9 +9,9 @@ import '../components/selects/select'
 import { debounce } from '../utils/debounce'
 
 @customElement('jira-search-modal')
-export class JiraSearchModal extends MobxLitElement {
+export class JiraSearchModal extends BaseMobxComponent {
   static styles = [
-    unsafeCSS(tailwind),
+    ...super.styles,
     css`
       .grid-cols-48px-auto {
         grid-template-columns: 48px auto;
