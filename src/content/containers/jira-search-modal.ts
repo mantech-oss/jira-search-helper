@@ -60,19 +60,14 @@ export class JiraSearchModal extends MobxLitElement {
               @keyup=${this.onInputPreventKeyEvent}
             ></jira-select>
 
-            <label class="label ml-auto">
-              <span class="label-text">${chrome.i18n.getMessage('TOTAL')}</span>
-            </label>
-            <select
-              class="select select-ghost select-sm w-32 focus:outline-none"
-              @input=${this.onInputSearchResultCount}
-            >
-              <option value="10" ?selected=${searchResultCount === 10}>10 (fast)</option>
-              <option value="20" ?selected=${searchResultCount === 20}>20 (default)</option>
-              <option value="50" ?selected=${searchResultCount === 50}>50</option>
-              <option value="100" ?selected=${searchResultCount === 100}>100</option>
-              <option value="500" ?selected=${searchResultCount === 500}>500 (slow)</option>
-            </select>
+            <jira-select
+              class="w-32 mr-4"
+              .title=${chrome.i18n.getMessage('TOTAL')}
+              .position=${'RIGHT'}
+              .items=${[`10`, `20`, `50`, `100`, `500`]}
+              .selectedItemText=${searchResultCount.toString()}
+              @select-item=${this.onInputSearchResultCount}
+            ></jira-select>
           </div>
           <div part="search-box" class="py-4">
             <input
@@ -208,9 +203,9 @@ export class JiraSearchModal extends MobxLitElement {
   }
 
   @eventOptions({})
-  async onInputSearchResultCount(event: Event): Promise<void> {
-    const input = event.target as HTMLSelectElement
-    const value = parseInt(input.value)
+  async onInputSearchResultCount(event: CustomEvent): Promise<void> {
+    const detail = event.detail
+    const value = parseInt(detail.text)
 
     await this.store.setSearchResultCount(value)
     this.store.fetchSearchApi(this.searchText)
