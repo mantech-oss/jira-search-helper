@@ -1,5 +1,6 @@
 import { action, makeObservable, observable } from 'mobx'
 import { getProjectList, ProjectValue } from '../apis/project-list'
+import { getOnpremiseProjectList } from '../apis/project-list-onpremise'
 import { getSearchIssues } from '../apis/search-issue'
 import { parseCookie } from '../utils/parseCookie'
 import { stripHTMLTags } from '../utils/stripHTMLTags'
@@ -77,15 +78,26 @@ export class Store {
   }
 
   async getProjectList(): Promise<void> {
-    const projectJson = await getProjectList({
-      abortController: this.controller,
-    })
-    const projects = projectJson.values.map((each: ProjectValue) => {
-      return {
-        id: each.id,
-        key: each.key,
-      }
-    })
+    const { isOnPremise } = await chrome.storage.local.get(['isOnPremise'])
+    let projects: Project[] = [];
+    if (isOnPremise) {
+      const projectJson = await getOnpremiseProjectList({ abortController: this.controller })
+      projects = projectJson.map(each => {
+        return {
+          id: each.id,
+          key: each.key,
+        }
+      })
+    } else {
+      const projectJson = await getProjectList({ abortController: this.controller })
+      projects = projectJson.values.map((each: ProjectValue) => {
+        return {
+          id: each.id,
+          key: each.key,
+        }
+      })
+    }
+    
     this.setProjects(projects)
   }
 
