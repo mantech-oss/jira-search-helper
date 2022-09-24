@@ -1,6 +1,6 @@
 import { html, css, LitElement, unsafeCSS } from 'lit'
-import { customElement, property } from 'lit/decorators.js'
-import { IconCog } from '../content/components/icons/icons'
+import { customElement, eventOptions, property, state } from 'lit/decorators.js'
+import { IconCog, IconCopy } from '../content/components/icons/icons'
 import { watch } from '../content/utils/watch'
 
 import tailwind from '../styles/tailwind.css?inline'
@@ -14,6 +14,9 @@ export class PopupMain extends LitElement {
 
   @property({ type: Boolean })
   isOnPremise = false
+
+  @state()
+  isShortcutCopyLink = false
 
   // # Event handlers
 
@@ -71,9 +74,12 @@ export class PopupMain extends LitElement {
                 </label>
               </div>
             </li>
-            
+
             <li class="w-full flex">
-              <div class="tooltip" data-tip="${chrome.i18n.getMessage('HELP_TEXT_JIRA_ON_PREMISE')}">
+              <div
+                class="tooltip"
+                data-tip="${chrome.i18n.getMessage('HELP_TEXT_JIRA_ON_PREMISE')}"
+              >
                 <label class="label cursor-pointer">
                   <span class="label-text">${chrome.i18n.getMessage('JIRA_ON_PREMISE')}</span>
                   <input
@@ -87,10 +93,33 @@ export class PopupMain extends LitElement {
                 </label>
               </div>
             </li>
+
+            <li class="w-full flex" @click=${this.onClickShortcutCopyLink}>
+              <div
+                class="tooltip"
+                data-tip="${this.isShortcutCopyLink
+                  ? chrome.i18n.getMessage('COPIED_TEXT')
+                  : chrome.i18n.getMessage('HELP_TEXT_COPY_EXTENSION_SHORTCUT')}"
+              >
+                <label class="label cursor-pointer">
+                  <span class="label-text">
+                    ${chrome.i18n.getMessage('COPY_EXTENSION_SHORTCUT')}
+                  </span>
+                  <span class="inline-block">${IconCopy}</span>
+                </label>
+              </div>
+            </li>
           </ul>
         </div>
       </main>
     `
+  }
+
+  @eventOptions({})
+  async onClickShortcutCopyLink(event: Event): Promise<void> {
+    event.preventDefault()
+    await navigator.clipboard.writeText('chrome://extensions/shortcuts')
+    this.isShortcutCopyLink = true
   }
 
   static styles = [

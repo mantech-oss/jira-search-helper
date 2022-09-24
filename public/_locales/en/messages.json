@@ -28,5 +28,14 @@
   },
   "HELP_TEXT_JIRA_ON_PREMISE": {
     "message": "If you use the JIRA on-premise type, the JIRA Project API is different, so you may not be able to search. In this case, please check this option."
+  },
+  "COPY_EXTENSION_SHORTCUT": {
+    "message": "Copy shortcut change link"
+  },
+  "HELP_TEXT_COPY_EXTENSION_SHORTCUT": {
+    "message": "copy link: chrome://extensions/shortcuts."
+  },
+  "COPIED_TEXT": {
+    "message": "Copied!"
   }
 }
