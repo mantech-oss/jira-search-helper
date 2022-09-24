@@ -181,6 +181,8 @@ export class JiraSearchModal extends MobxLitElement {
     }
 
     await this.store.fetchSearchApi(searchText)
+    await this.updateComplete
+    this.store.loading = false
   }
 
   // Prevent Jira Hotkey
@@ -195,11 +197,13 @@ export class JiraSearchModal extends MobxLitElement {
   }
 
   @eventOptions({})
-  onInputProject(event: CustomEvent): void {
+  async onInputProject(event: CustomEvent): Promise<void> {
     const detail = event.detail
 
     this.store.selectProject(this.store.projects[detail.index])
-    this.store.fetchSearchApi(this.searchText)
+    await this.store.fetchSearchApi(this.searchText)
+    await this.updateComplete
+    this.store.loading = false
   }
 
   @eventOptions({})
@@ -208,7 +212,9 @@ export class JiraSearchModal extends MobxLitElement {
     const value = parseInt(detail.text)
 
     await this.store.setSearchResultCount(value)
-    this.store.fetchSearchApi(this.searchText)
+    await this.store.fetchSearchApi(this.searchText)
+    await this.updateComplete
+    this.store.loading = false
   }
 }
 
