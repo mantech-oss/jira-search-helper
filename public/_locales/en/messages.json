@@ -22,5 +22,11 @@
   },
   "HELP_TEXT_COMMANDS": {
     "message": "Open Modal: Command(Ctrl)+Shift+I"
+  },
+  "JIRA_ON_PREMISE": {
+    "message": "On-Premise"
+  },
+  "HELP_TEXT_JIRA_ON_PREMISE": {
+    "message": "If you use the JIRA on-premise type, the JIRA Project API is different, so you may not be able to search. In this case, please check this option."
   }
 }

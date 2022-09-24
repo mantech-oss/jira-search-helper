@@ -12,14 +12,18 @@ export class PopupMain extends LitElement {
   @property({ type: Boolean })
   enableSearchFeature = true
 
+  @property({ type: Boolean })
+  isOnPremise = false
+
   // # Event handlers
 
   // # Lifecycle methods
 
   connectedCallback(): void {
-    chrome.storage.local.get([`enableSearchFeature`], (result: any) => {
-      const { enableSearchFeature } = result
+    chrome.storage.local.get([`enableSearchFeature`, `isOnPremise`], (result: any) => {
+      const { enableSearchFeature, isOnPremise } = result
       this.enableSearchFeature = enableSearchFeature ?? true
+      this.isOnPremise = isOnPremise ?? false
     })
     super.connectedCallback()
   }
@@ -30,8 +34,13 @@ export class PopupMain extends LitElement {
     chrome.storage.local.set({ enableSearchFeature: this.enableSearchFeature })
   }
 
+  @watch('isOnPremise', { waitUntilFirstUpdate: true })
+  async onWatchIsOnPremise(): Promise<void> {
+    chrome.storage.local.set({ isOnPremise: this.isOnPremise })
+  }
+
   render() {
-    const { enableSearchFeature } = this
+    const { enableSearchFeature, isOnPremise } = this
     return html`
       <main data-theme="fantasy" class="bg-transparent">
         <div class="navbar bg-base-100 shadow-xl rounded-box flex item-center justify-between">
@@ -55,6 +64,22 @@ export class PopupMain extends LitElement {
                     ?checked=${enableSearchFeature}
                     @change=${(event: Event) => {
                       this.enableSearchFeature = (event.target as HTMLInputElement).checked
+                    }}
+                    type="checkbox"
+                    class="toggle toggle-accent"
+                  />
+                </label>
+              </div>
+            </li>
+            
+            <li class="w-full flex">
+              <div class="tooltip" data-tip="${chrome.i18n.getMessage('HELP_TEXT_JIRA_ON_PREMISE')}">
+                <label class="label cursor-pointer">
+                  <span class="label-text">${chrome.i18n.getMessage('JIRA_ON_PREMISE')}</span>
+                  <input
+                    ?checked=${isOnPremise}
+                    @change=${(event: Event) => {
+                      this.isOnPremise = (event.target as HTMLInputElement).checked
                     }}
                     type="checkbox"
                     class="toggle toggle-accent"
