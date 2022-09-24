@@ -241,8 +241,10 @@ export class Store {
         })
       })
       this.setSearchResult(searchResult)
-    } catch (error) {
+    } catch (err) {
+      const error = err as Error
       this.loading = false
+      if (error.name === `AbortError`) return
       console.error(error)
     }
   }
