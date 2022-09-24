@@ -89,15 +89,17 @@ export enum Style {
 
 export async function getProjectList({
   abortController,
+  startAt = 0,
 }: {
   abortController?: AbortController
+  startAt?: number
 } = {}): Promise<GetProjectListResponse> {
   const searchParams = new URLSearchParams()
   searchParams.set('expand', `lead,url,favourite,permissions`)
-  searchParams.set('maxResults', `100`)
+  searchParams.set('maxResults', `50`) // max = 50, Not available even if exceeding 50
   searchParams.set('orderBy', `+NAME`)
   searchParams.set('query', ``)
-  searchParams.set('startAt', `0`)
+  searchParams.set('startAt', `${startAt}`)
   searchParams.set('typeKey', `software`)
   const response = await fetch(
     `https://${location.host}/rest/api/2/project/search?${searchParams.toString()}`,

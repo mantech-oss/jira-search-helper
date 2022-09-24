@@ -89,13 +89,29 @@ export class Store {
         }
       })
     } else {
-      const projectJson = await getProjectList({ abortController: this.controller })
-      projects = projectJson.values.map((each: ProjectValue) => {
-        return {
-          id: each.id,
-          key: each.key,
-        }
-      })
+      let isLast = false
+      let startAt = 0
+      while (isLast === false) {
+        try {
+          const projectJson = await getProjectList({ abortController: this.controller, startAt: startAt })
+          isLast = projectJson.isLast
+          if (projectJson.isLast === false) {
+            startAt += 50
+          }
+          projects = [
+            ...projects, 
+            ...projectJson.values.map((each: ProjectValue) => {
+              return {
+                id: each.id,
+                key: each.key,
+              }
+            })
+          ]
+        } catch (error) {
+           console.error(error)
+           isLast = true
+        }        
+      }      
     }
     
     this.setProjects(projects)
